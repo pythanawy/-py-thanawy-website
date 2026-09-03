@@ -159,7 +159,7 @@ if (
 (function () {
     "use strict";
 
-    const BACKEND_URL = "http://localhost:8000/chat";
+    const BACKEND_URL = "https://st-mark-chatbot.vercel.app/chat";
 
     const WELCOME_MESSAGE =
         "أهلاً بيك! أنا بوت كنيسة مار مرقس بشبرا. اسألني عن مواعيد القداسات، " +
