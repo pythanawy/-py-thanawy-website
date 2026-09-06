@@ -504,7 +504,7 @@ if (
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile", // Updated to the newest available model
+                    model: "allam-2-7b", // Updated to the newest available model
                     messages: [
                         { role: "system", content: "You are a helpful assistant for Mar Morcos Church in Shubra. Reply in Egyptian Arabic." },
                         { role: "user", content: question }
