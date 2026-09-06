@@ -533,7 +533,7 @@ if (
         } finally {
             sendBtn.disabled = false;
         }
-    }
+    } // <--- THIS IS THE REQUIRED MISSING BRACE
 
     function togglePanel() {
         opened = !opened;
