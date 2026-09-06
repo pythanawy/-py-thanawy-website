@@ -504,7 +504,7 @@ if (
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "llama3-8b-8192",
+                    model: "llama-3.1-8b-instant", // Updated to the newest available model
                     messages: [
                         { role: "system", content: "You are a helpful assistant for Mar Morcos Church in Shubra. Reply in Egyptian Arabic." },
                         { role: "user", content: question }
@@ -513,13 +513,15 @@ if (
             });
 
             if (!response.ok) {
+                // This grabs the EXACT error message from Groq to tell us why it failed
+                const errorDetails = await response.text();
+                console.error("Groq Error Details:", errorDetails);
                 throw new Error("HTTP " + response.status);
             }
 
             const data = await response.json();
             hideTyping();
             
-            // Extract the message from Groq's response structure
             const botReply = data.choices[0].message.content;
             addMessage(botReply || "معلش، مش لاقي إجابة دلوقتي.", "bot");
             
