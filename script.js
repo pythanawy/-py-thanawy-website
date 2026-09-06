@@ -494,10 +494,22 @@ if (
         showTyping();
 
         try {
-            const response = await fetch(BACKEND_URL, {
+            // WARNING: Remove this key immediately after your presentation!
+            const GROQ_API_KEY = "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"; 
+
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: question }),
+                headers: {
+                    "Authorization": `Bearer ${GROQ_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "llama3-8b-8192",
+                    messages: [
+                        { role: "system", content: "You are a helpful assistant for Mar Morcos Church in Shubra. Reply in Egyptian Arabic." },
+                        { role: "user", content: question }
+                    ]
+                })
             });
 
             if (!response.ok) {
@@ -506,8 +518,13 @@ if (
 
             const data = await response.json();
             hideTyping();
-            addMessage(data.reply || "معلش، مش لاقي إجابة دلوقتي.", "bot");
+            
+            // Extract the message from Groq's response structure
+            const botReply = data.choices[0].message.content;
+            addMessage(botReply || "معلش، مش لاقي إجابة دلوقتي.", "bot");
+            
         } catch (error) {
+            console.error(error);
             hideTyping();
             addMessage(
                 "معلش، فيه مشكلة في الاتصال بالبوت دلوقتي. جرب تاني بعد شوية، أو كلّم مكتب الكنيسة مباشرة.",
@@ -516,7 +533,6 @@ if (
         } finally {
             sendBtn.disabled = false;
         }
-    }
 
     function togglePanel() {
         opened = !opened;
