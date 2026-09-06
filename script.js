@@ -533,6 +533,7 @@ if (
         } finally {
             sendBtn.disabled = false;
         }
+    }
 
     function togglePanel() {
         opened = !opened;
