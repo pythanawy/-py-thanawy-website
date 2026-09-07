@@ -609,6 +609,34 @@ if (
 3. لا تخمن ولا تؤلف أي مواعيد، أسماء كهنة، أو تفاصيل من عندك إطلاقاً.
 `;
 
+    function normalizeArabic(text) {
+        return text
+            .toLowerCase()
+            .replace(/[إأآا]/g, "ا")
+            .replace(/[ىي]/g, "ي")
+            .replace(/ة/g, "ه")
+            .replace(/[ًٌٍَُِّْـ]/g, "")
+            .trim();
+    }
+
+    function getLocalResponse(question) {
+        const normalizedQuestion = normalizeArabic(question);
+        const asksAboutMass = /قداس|قداسات|مواعيد.*(قداس|كنيسه)|امتى.*(قداس|كنيسه)|متي.*(قداس|كنيسه)/.test(normalizedQuestion);
+
+        if (!asksAboutMass) return null;
+
+        return "دي مواعيد القداسات الأسبوعية حسب قاعدة بيانات الكنيسة:\n\n" +
+            "الأحد:\n" +
+            "- القداس الأول (الباكر): 6:00 ص - 8:00 ص (مذبح مارمرقس)\n" +
+            "- القداس الثاني: 8:00 ص - 10:30 ص (المذبح الرئيسي)\n" +
+            "- قداس الشباب والطلبة: 8:30 ص - 10:30 ص (كنيسة العذراء بالدور العلوي)\n\n" +
+            "الأربعاء: 7:00 ص - 9:30 ص.\n" +
+            "الجمعة: 6:30 ص - 8:30 ص، ثم 8:30 ص - 11:00 ص.\n" +
+            "السبت: 7:00 ص - 9:30 ص، ويعقبه مدارس الأحد.\n" +
+            "الاثنين والثلاثاء والخميس: 7:00 ص - 9:00 ص في غير أيام الأصوام.\n\n" +
+            "المواعيد ممكن تتغير في الأعياد والمناسبات الكنسية الكبرى، فالأفضل التأكد من سكرتارية الكنيسة قبل الذهاب.";
+    }
+
     async function sendQuestion() {
         const question = inputEl.value.trim();
         if (!question) return;
@@ -619,6 +647,14 @@ if (
         showTyping();
 
         try {
+            const localResponse = getLocalResponse(question);
+
+            if (localResponse) {
+                hideTyping();
+                addMessage(localResponse, "bot");
+                return;
+            }
+
             // Live Groq API key configured for the presentation demo
             const GROQ_API_KEY = "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";
 
