@@ -217,6 +217,14 @@ if (
             display: flex;
             animation: cb-pop-in 0.2s ease;
         }
+        .cb-panel.cb-fullscreen {
+            inset: 0;
+            width: 100vw;
+            max-width: none;
+            height: 100vh;
+            max-height: none;
+            border-radius: 0;
+        }
         @keyframes cb-pop-in {
             from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -257,6 +265,19 @@ if (
             border-radius: 6px;
         }
         .cb-header-close:hover {
+            background-color: rgba(255,255,255,0.15);
+        }
+        .cb-header-expand {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .cb-header-expand:hover {
             background-color: rgba(255,255,255,0.15);
         }
 
@@ -401,6 +422,7 @@ if (
                     <span class="cb-dot"></span>
                     بوت كنيسة مار مرقس
                 </div>
+                <button class="cb-header-expand" id="cbExpand" aria-label="فتح الشات بملء الشاشة" aria-pressed="false">⛶</button>
                 <button class="cb-header-close" id="cbClose" aria-label="إغلاق الشات">✕</button>
             </div>
 
@@ -428,11 +450,13 @@ if (
     const badge = document.getElementById("cbBadge");
     const panel = document.getElementById("cbPanel");
     const closeBtn = document.getElementById("cbClose");
+    const expandBtn = document.getElementById("cbExpand");
     const messagesEl = document.getElementById("cbMessages");
     const inputEl = document.getElementById("cbInput");
     const sendBtn = document.getElementById("cbSend");
 
     let opened = false;
+    let fullscreen = false;
 
     function addMessage(text, kind) {
         const bubble = document.createElement("div");
@@ -622,7 +646,12 @@ if (
     function getLocalResponse(question) {
         const normalizedQuestion = normalizeArabic(question);
         const asksAboutConfession = /اعتراف|اعترافات/.test(normalizedQuestion);
+        const asksAboutSecondarySundaySchool = /مدارس.*ا?حد.*ثانوي/.test(normalizedQuestion);
         const asksAboutMass = /قداس|قداسات|مواعيد.*(قداس|كنيسه)|امتى.*(قداس|كنيسه)|متي.*(قداس|كنيسه)/.test(normalizedQuestion);
+
+        if (asksAboutSecondarySundaySchool) {
+            return "موعد مدارس الأحد للمرحلة الثانوية:\n- يوم السبت من 10:00 صباحًا إلى 12:00 ظهرًا.\n\nيفضل التأكد من الكنيسة قبل الذهاب لأن المواعيد قد تتغير.";
+        }
 
         if (asksAboutConfession && /بيشوي/.test(normalizedQuestion)) {
             return "مواعيد الاعتراف مع القس بيشوي:\n- السبت بعد القداس.\n- الخميس من 6:30 مساءً إلى 9:00 مساءً.\n\nيفضل التأكد من الكنيسة قبل الذهاب لأن المواعيد قد تتغير.";
@@ -732,8 +761,20 @@ if (
         }
     }
 
+    function toggleFullscreen() {
+        fullscreen = !fullscreen;
+        panel.classList.toggle("cb-fullscreen", fullscreen);
+        expandBtn.textContent = fullscreen ? "⛶" : "⛶";
+        expandBtn.setAttribute("aria-pressed", String(fullscreen));
+        expandBtn.setAttribute(
+            "aria-label",
+            fullscreen ? "تصغير الشات" : "فتح الشات بملء الشاشة"
+        );
+    }
+
     launcher.addEventListener("click", togglePanel);
     closeBtn.addEventListener("click", togglePanel);
+    expandBtn.addEventListener("click", toggleFullscreen);
 
     sendBtn.addEventListener("click", sendQuestion);
     inputEl.addEventListener("keydown", function (event) {
